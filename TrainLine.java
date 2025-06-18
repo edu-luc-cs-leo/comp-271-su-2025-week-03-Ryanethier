@@ -8,12 +8,15 @@ public class TrainLine {
     private Station head;
     /** Current number of stations in the line */
     private int numberOfStations;
+    /** The tail station of the train line */
+    private Station tail;
 
     /** Basic constructor */
     public TrainLine(String name) {
         this.name = name;
         this.head = null;
         this.numberOfStations = 0;
+        this.tail = null; // Initalize the reference
     } // basic constructor
 
     /** Default constructor */
@@ -27,8 +30,17 @@ public class TrainLine {
     }
 
     /**
-     * Adds a new station after the last station of a trainline.
+     * Adds a new station after the last station
      * 
+     * Strategy: Instead of traversing the entire list to find last station,
+     * keep a 'tail' referenec that always points to the last station of line.
+     * 
+     * 
+     * Steps:
+     * 1. Keep a 'tail' reference variable that points to last station
+     * 2. When adding first station, both head and tail point to it
+     * 3. When adding other stations, use tail.setnNext() method and update tail
+     * 4. Should eliminate the need for the while loop
      * @param name String with name of new station to create and add
      */
     public void add(String name) {
@@ -37,20 +49,16 @@ public class TrainLine {
             // No stations exist in this line. Make this new station
             // the head station of the line
             this.head = newStation;
+            this.tail = newStation;
         } else {
-            // The line has at least one station (the head station).
-            // Find the last station and make its next station the new one.
-            Station cursor = this.head;
-            while (cursor.hasNext()) {
-                cursor = cursor.getNext();
+            // Instead of traversing list, use tail reference
+            this.tail.setNext(newStation);
+            this.tail = newStation; // Update tail to point to new last station
+
             }
-            // Cursor is now at the last station of the line
-            cursor.setNext(newStation);
-        }
-        this.numberOfStations = this.numberOfStations+1; 
-        // or this.numberOfStations++;
-        // or this.numberOfStatiosn += 1;
-    } // method add
+            
+            this.numberOfStations = this.numberOfStations + 1;
+        } // method add
 
     /**
      * Finds how many stations are in a train line
@@ -69,6 +77,63 @@ public class TrainLine {
         }
         return counter;
     } // method countStations
+
+    /**
+     * Returns the position of named station in train line
+     * @param stationName the name of the station to search for
+     * @return the position of that station, or -1 if not found
+     */
+
+    public int indexOf(String stationName) {
+        int index = 0;
+        Station cursor = this.head;
+
+        while (cursor != null) {
+            if (cursor.getName().equals(stationName)) {
+                return index;
+                
+            }
+            cursor = cursor.getNext();
+            index++;
+        
+        }
+
+        return -1;
+       
+    } // method indexOf
+
+    /**
+     * Checks if the named station is in the train line
+     * 
+     * @param stationName the name of the station to search for
+     * @return true if station is found, false otherwise
+     * 
+     * 
+     */
+
+     public boolean contains(String stationName) {
+        // Start the traversal from head
+        Station cursor = this.head;
+
+        // Traverse the entire linked-list
+        while (cursor != null) {
+            // Compare current station's name with the target station name
+            // Using .equals() for proper String comparison (not ==)
+            if (cursor.getName().equals(stationName)) {
+                // Station found return true
+                return true;
+            }
+
+            // Move on to next station in the line
+
+            cursor = cursor.getNext();
+        }
+
+        // Traversed entire list without finding the station
+        // Return false to indicate station is not present
+
+        return false;
+     }
 
 
     /**
